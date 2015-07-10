@@ -15,9 +15,9 @@ modelInfo <- list(label = "Linear Regression",
                     } else out <- lm(.outcome ~ ., data = dat, ...)
                     out
                   },
-                  predict = function(modelFit, newdata, submodels = NULL) {
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
                     if(!is.data.frame(newdata)) newdata <- as.data.frame(newdata)
-                    predict(modelFit, newdata)
+                    predict(modelFit, newdata, ...)
                     },
                   prob = NULL,
                   predictors = function(x, ...) predictors(x$terms),
@@ -28,6 +28,6 @@ modelInfo <- list(label = "Linear Regression",
                     out <- data.frame(varImps)
                     colnames(out) <- "Overall"
                     if(!is.null(names(varImps))) rownames(out) <- names(varImps)
-                    out   
+                    out
                   },
                   sort = function(x) x)

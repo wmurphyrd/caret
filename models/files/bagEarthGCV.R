@@ -1,4 +1,4 @@
-modelInfo <- list(label = "Bagged MARS using gCV Pruning", 
+modelInfo <- list(label = "Bagged MARS using gCV Pruning",
                   library = "earth",
                   type = c("Regression", "Classification"),
                   parameters = data.frame(parameter = c('degree'),
@@ -6,9 +6,9 @@ modelInfo <- list(label = "Bagged MARS using gCV Pruning",
                                           label = c('Product Degree')),
                   grid = function(x, y, len = NULL)  data.frame(degree = 1),
                   loop = NULL,
-                  fit = function(x, y, wts, param, lev, last, classProbs, ...) { 
+                  fit = function(x, y, wts, param, lev, last, classProbs, ...) {
                     if(is.factor(y)){
-                      mod <- bagEarth(x, y, degree = param$degree, 
+                      mod <- bagEarth(x, y, degree = param$degree,
                                       glm = list(family=binomial, maxit=100),
                                       ...)
                     } else {
@@ -16,12 +16,12 @@ modelInfo <- list(label = "Bagged MARS using gCV Pruning",
                     }
                     mod
                   },
-                  predict = function(modelFit, newdata, submodels = NULL) {
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
                     if(modelFit$problemType == "Classification")
                     {
-                      out <- predict(modelFit, newdata,  type = "class")
+                      out <- predict(modelFit, newdata,  type = "class", ...)
                     } else {
-                      out <- predict(modelFit, newdata)
+                      out <- predict(modelFit, newdata, ...)
                     }
                     out
                   },
@@ -49,6 +49,6 @@ modelInfo <- list(label = "Bagged MARS using gCV Pruning",
                     out
                   },
                   levels = function(x) x$levels,
-                  tags = c("Multivariate Adaptive Regression Splines", "Ensemble Model", 
+                  tags = c("Multivariate Adaptive Regression Splines", "Ensemble Model",
                            "Implicit Feature Selection", "Bagging"),
                   sort = function(x) x[order(x$degree),])

@@ -9,8 +9,8 @@ modelInfo <- list(label = "Binary Discriminant Analysis",
                   fit = function(x, y, wts, param, lev, last, classProbs, ...) {
                     binda(as.matrix(x), y, lambda.freqs = param$lambda.freqs, ...)
                   },
-                  predict = function(modelFit, newdata, submodels = NULL) {
-                    as.character(predict(modelFit, as.matrix(newdata))$class)
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
+                    as.character(predict(modelFit, as.matrix(newdata), ...)$class)
                   },
                   prob = function(modelFit, newdata, submodels = NULL){
                     predict(modelFit, as.matrix(newdata))$posterior

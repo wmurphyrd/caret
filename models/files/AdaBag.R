@@ -1,14 +1,14 @@
 modelInfo <- list(label = "Bagged AdaBoost",
                   library = c("adabag", "plyr"),
-                  loop = function(grid) {     
+                  loop = function(grid) {
                     loop <- ddply(grid, c("maxdepth"),
                                   function(x) c(mfinal = max(x$mfinal)))
                     submodels <- vector(mode = "list", length = nrow(loop))
                     for(i in seq(along = loop$mfinal)) {
                       index <- which(grid$maxdepth == loop$maxdepth[i])
-                      trees <- grid[index, "mfinal",drop = FALSE] 
+                      trees <- grid[index, "mfinal",drop = FALSE]
                       submodels[[i]] <- data.frame(mfinal = trees[trees != loop$mfinal[i]])
-                    }    
+                    }
                     list(loop = loop, submodels = submodels)
                   },
                   type = c("Classification"),
@@ -19,65 +19,65 @@ modelInfo <- list(label = "Bagged AdaBoost",
                                                                 maxdepth = seq(1, len)),
                   fit = function(x, y, wts, param, lev, last, classProbs, ...) {
                     theDots <- list(...)
-                    
+
                     if(any(names(theDots) == "control")) {
-                      theDots$control$maxdepth <- param$maxdepth 
+                      theDots$control$maxdepth <- param$maxdepth
                       ctl <- theDots$control
                       theDots$control <- NULL
-                      
+
                     } else ctl <- rpart.control(maxdepth = param$maxdepth,
-                                                cp=-1,minsplit=0,xval=0) 
-                    
+                                                cp=-1,minsplit=0,xval=0)
+
                     modelArgs <- c(list(formula = as.formula(.outcome ~ .),
                                         data = if(is.data.frame(x)) x else as.data.frame(x),
-                                        mfinal = param$mfinal,            
+                                        mfinal = param$mfinal,
                                         control = ctl),
                                    theDots)
                     modelArgs$data$.outcome <- y
-                    out <- do.call("bagging", modelArgs)                    
-                    out     
+                    out <- do.call("bagging", modelArgs)
+                    out
                   },
-                  predict = function(modelFit, newdata, submodels = NULL) {
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
                     if(!is.data.frame(newdata)) newdata <- as.data.frame(newdata)
                     ## The predict function requires the outcome! Trick it by
                     ## adding bogus data
-                    newdata$.outcome <- factor(rep(modelFit$obsLevels[1], nrow(newdata)), 
+                    newdata$.outcome <- factor(rep(modelFit$obsLevels[1], nrow(newdata)),
                                                levels = modelFit$obsLevels)
-                    out <- predict(modelFit, newdata, 
-                                   newmfinal = modelFit$tuneValue$mfinal)$class
-                    
+                    out <- predict(modelFit, newdata,
+                                   newmfinal = modelFit$tuneValue$mfinal, ...)$class
+
                     if(!is.null(submodels)) {
                       tmp <- vector(mode = "list", length = length(submodels$mfinal)+1)
                       tmp[[1]] <- out
                       for(i in seq(along = submodels$mfinal)) {
-                        tmp[[i+1]] <- predict(modelFit, newdata, 
-                                              newmfinal = submodels$mfinal[[i]])$class
+                        tmp[[i+1]] <- predict(modelFit, newdata,
+                                              newmfinal = submodels$mfinal[[i]], ...)$class
                       }
                       out <- tmp
-                    }       
-                    out  
+                    }
+                    out
                   },
                   prob = function(modelFit, newdata, submodels = NULL){
                     if(!is.data.frame(newdata)) newdata <- as.data.frame(newdata)
                     ## The predict function requires the outcome! Trick it by
                     ## adding bogus data
-                    newdata$.outcome <- factor(rep(modelFit$obsLevels[1], nrow(newdata)), 
+                    newdata$.outcome <- factor(rep(modelFit$obsLevels[1], nrow(newdata)),
                                                levels = modelFit$obsLevels)
                     out <- predict(modelFit, newdata)$prob
                     colnames(out) <- modelFit$obsLevels
-                    
+
                     if(!is.null(submodels)) {
                       tmp <- vector(mode = "list", length = length(submodels$mfinal)+1)
                       tmp[[1]] <- out
                       for(i in seq(along = submodels$mfinal)) {
-                        tmp[[i+1]] <- predict(modelFit, newdata,  
+                        tmp[[i+1]] <- predict(modelFit, newdata,
                                               newmfinal = submodels$mfinal[[i]])$prob
                         colnames(tmp[[i+1]]) <- modelFit$obsLevels
                       }
                       out <- lapply(tmp, as.data.frame)
                     }
-                    
-                    out 
+
+                    out
                   },
                   varImp = function(object, ...){
                     imps <- data.frame(Overall = object$importance)

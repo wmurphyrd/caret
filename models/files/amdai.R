@@ -7,13 +7,13 @@ modelInfo <- list(label = "Adaptive Mixture Discriminant Analysis",
                                           label = "Model Type"),
                   grid = function(x, y, len = NULL) data.frame(model = "lda"),
                   fit = function(x, y, wts, param, lev, last, classProbs, ...) {
-                    mod <- amdai(x, as.numeric(y), 
+                    mod <- amdai(x, as.numeric(y),
                                  model = as.character(param$model), ...)
                     mod$levels <- levels(y)
                     mod
                   },
-                  predict = function(modelFit, newdata, submodels = NULL) {
-                    out <- predict(modelFit, newdata, K = length(modelFit$levels))$cls
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
+                    out <- predict(modelFit, newdata, K = length(modelFit$levels), ...)$cls
                     factor(modelFit$levels[out], levels = modelFit$levels)
                   },
                   prob = function(modelFit, newdata, submodels = NULL){

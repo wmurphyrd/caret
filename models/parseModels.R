@@ -1,4 +1,5 @@
-setwd("~/Code/github/caret/models/files")
+wd <- getwd()
+setwd("../../models/files")
 modelFiles <- list.files(pattern = "\\.R$")
 
 models <- vector(mode = "list", length = length(modelFiles))
@@ -14,3 +15,5 @@ save(models, file = "../../pkg/caret/inst/models/models.RData")
 
 # cat("\nYou can update your caret installation using the command:\n\n")
 # cat(sprintf("  cp models.RData %s/.\n", system.file("models", package="caret")))
+
+setwd(wd)

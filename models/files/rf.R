@@ -6,14 +6,14 @@ modelInfo <- list(label = "Random Forest",
                                           class = "numeric",
                                           label = "#Randomly Selected Predictors"),
                   grid = function(x, y, len = NULL) {
-                    data.frame(mtry = caret::var_seq(p = ncol(x), 
-                                              classification = is.factor(y), 
+                    data.frame(mtry = caret::var_seq(p = ncol(x),
+                                              classification = is.factor(y),
                                               len = len))
                   },
-                  fit = function(x, y, wts, param, lev, last, classProbs, ...) 
+                  fit = function(x, y, wts, param, lev, last, classProbs, ...)
                     randomForest(x, y, mtry = param$mtry, ...),
-                  predict = function(modelFit, newdata, submodels = NULL) 
-                    predict(modelFit, newdata),
+                  predict = function(modelFit, newdata, submodels = NULL, ...)
+                    predict(modelFit, newdata, ...),
                   prob = function(modelFit, newdata, submodels = NULL)
                     predict(modelFit, newdata, type = "prob"),
                   predictors = function(x, ...) {
@@ -37,11 +37,11 @@ modelInfo <- list(label = "Random Forest",
                         varImp <- data.frame(Overall = varImp[,1])
                       }
                     }
-                    
+
                     out <- as.data.frame(varImp)
                     if(dim(out)[2] == 2) {
                       tmp <- apply(out, 1, mean)
-                      out[,1] <- out[,2] <- tmp  
+                      out[,1] <- out[,2] <- tmp
                     }
                     out
                   },

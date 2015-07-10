@@ -16,13 +16,13 @@ training and test data predictions and class probabilities.
 
 extractPrediction(models,
                   testX = NULL, testY = NULL,
-                  unkX = NULL, 
+                  unkX = NULL,
                   unkOnly = !is.null(unkX) & is.null(testX),
                   verbose = FALSE)
 
 extractProb(models,
             testX = NULL,  testY = NULL,
-            unkX = NULL, 
+            unkX = NULL,
             unkOnly = !is.null(unkX) & is.null(testX),
             verbose = FALSE)
 }
@@ -30,12 +30,12 @@ extractProb(models,
   \item{object}{For \code{predict.train}, an object of class \code{\link{train}}. For \code{predict.list}, a list of objects of class \code{\link{train}}. }
   \item{newdata}{an optional set of data to predict on. If \code{NULL}, then the original training data are used}
   \item{type}{either "raw" or "prob", for the number/class predictions or class probabilities, respectively. Class probabilities are not available  for all classification models}
-  \item{models}{a list of objects of the class \code{train}. The objects must have been generated with 
+  \item{models}{a list of objects of the class \code{train}. The objects must have been generated with
    \code{fitBest = FALSE} and \code{returnData = TRUE}.}
-   \item{na.action}{the method for handling missing data }  
+   \item{na.action}{the method for handling missing data }
   \item{testX}{an optional set of data to predict}
   \item{testY}{an optional outcome corresponding to the data given in \code{testX}}
-  \item{unkX}{another optional set of data to predict without known outcomes}  
+  \item{unkX}{another optional set of data to predict without known outcomes}
   \item{unkOnly}{a logical to bypass training and test set predictions. This is useful if speed is needed
    for unknown samples.}
   \item{verbose}{a logical for printing messages}
@@ -50,10 +50,12 @@ To get predictions for a series of models at once, a list of \code{\link{train}}
 
 The two extraction functions can be used to get the predictions and observed outcomes at once for the training, test and/or unknown samples at once in a single data frame (instead of a list of just the predictions). These objects can then be passes to \code{\link{plotObsVsPred}} or \code{\link{plotClassProbs}}.
 
+Additional arguments can be provided to the model's \code{predict} function (e.g., \code{interval} or tuning paramters) via \code{\ldots} for \code{extractPrediction} and \code{predict.train} when \code{type = "raw"}. Prediction submodels can also be specified via the \code{param} argument to receive multiple predictions with varying values for a tuning paramter where applicable. \code{param} should contain a vector named for the tuning paramter with the values to be used. Support for submodels and the name of the tuning paramter can be verifying by viewing the \code{predict} function for a model via \code{\link{getModelInfo}}. These options may alter the structure of the returned predictions, see value.
+
 }
 \value{
 
-  For \code{predict.train}, a vector of predictions if \code{type =  "raw"} or a data frame of class probabilities for \code{type =  "probs"}. In the latter case, there are columns for each class.
+  For \code{predict.train}, a vector of predictions if \code{type =  "raw"} or, when intervals or submodel predictions are requested, a data frame with predictions in the column \code{pred} and additional values in subsequent columns. A data frame of class probabilities for \code{type =  "probs"}. In the latter case, there are columns for each class.
 
   For \code{predict.list}, a list results. Each element is produced by \code{predict.train}.
 
@@ -64,10 +66,11 @@ The two extraction functions can be used to get the predictions and observed out
   \item{object}{the names of the objects within \code{models}. If \code{models} is an un-named list, the values of \code{object} will be "Object1", "Object2" and so on}
   \item{dataType }{"Training", "Test" or "Unknown" depending on what was
     specified}
+  The \code{extractPrediction} may contain additional columns with intervals or submodel predictions when requested. These column names are prepended with \code{pred.}
 
   For \code{extractProb}, a data frame. There is a column for each class
   containing the probabilities. The remaining columns are the same as
-  above (although the \code{pred} column is the predicted class)  
+  above (although the \code{pred} column is the predicted class)
 }
 \author{Max Kuhn}
 
@@ -78,10 +81,10 @@ The two extraction functions can be used to get the predictions and observed out
 \examples{
    \dontrun{
 
-knnFit <- train(Species ~ ., data = iris, method = "knn", 
+knnFit <- train(Species ~ ., data = iris, method = "knn",
                 trControl = trainControl(method = "cv"))
 
-rdaFit <- train(Species ~ ., data = iris, method = "rda", 
+rdaFit <- train(Species ~ ., data = iris, method = "rda",
                 trControl = trainControl(method = "cv"))
 
 predict(knnFit)

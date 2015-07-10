@@ -7,12 +7,12 @@ modelInfo <- list(label = "Bayesian Regularized Neural Networks",
                   grid = function(x, y, len = NULL)
                     expand.grid(neurons = 1:len),
                   loop = NULL,
-                  fit = function(x, y, wts, param, lev, last, classProbs, ...) 
+                  fit = function(x, y, wts, param, lev, last, classProbs, ...)
                     brnn(as.matrix(x), y, neurons = param$neurons, ...),
-                  predict = function(modelFit, newdata, submodels = NULL) 
-                    predict(modelFit,as.matrix(newdata)),
+                  predict = function(modelFit, newdata, submodels = NULL, ...)
+                    predict(modelFit,as.matrix(newdata), ...),
                   prob = NULL,
-                  predictors = function(x, s = NULL, ...) 
+                  predictors = function(x, s = NULL, ...)
                     names(x$x_spread),
                   tags = c("Bayesian Model", "Neural Network", "Regularization"),
                   prob = NULL,

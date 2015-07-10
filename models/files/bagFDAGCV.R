@@ -1,4 +1,4 @@
-modelInfo <- list(label = "Bagged FDA using gCV Pruning", 
+modelInfo <- list(label = "Bagged FDA using gCV Pruning",
                   library = "earth",
                   type = c("Classification"),
                   parameters = data.frame(parameter = c('degree'),
@@ -9,15 +9,15 @@ modelInfo <- list(label = "Bagged FDA using gCV Pruning",
                   fit = function(x, y, wts, param, lev, last, classProbs, ...) {
                     dat <- if(is.data.frame(x)) x else as.data.frame(x)
                     dat$.outcome <- y
-                    bagFDA(.outcome ~ ., 
-                           data = dat, 
+                    bagFDA(.outcome ~ .,
+                           data = dat,
                            degree = param$degree, ...)
                   },
-                  tags = c("Multivariate Adaptive Regression Splines", "Ensemble Model", 
+                  tags = c("Multivariate Adaptive Regression Splines", "Ensemble Model",
                            "Implicit Feature Selection", "Bagging"),
-                  predict = function(modelFit, newdata, submodels = NULL) 
-                    predict(modelFit , newdata),
-                  prob = function(modelFit, newdata, submodels = NULL) 
+                  predict = function(modelFit, newdata, submodels = NULL, ...)
+                    predict(modelFit , newdata, ...),
+                  prob = function(modelFit, newdata, submodels = NULL)
                     predict(modelFit, newdata, type= "probs"),
                   predictors = function(x, ...) {
                     fdaPreds <- function(x) {
@@ -38,6 +38,6 @@ modelInfo <- list(label = "Bagged FDA using gCV Pruning",
                     out
                   },
                   levels = function(x) x$levels,
-                  tags = c("Multivariate Adaptive Regression Splines", "Ensemble Model", 
+                  tags = c("Multivariate Adaptive Regression Splines", "Ensemble Model",
                            "Implicit Feature Selection", "Bagging"),
                   sort = function(x) x[order(x$degree),])

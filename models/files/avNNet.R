@@ -1,11 +1,11 @@
-modelInfo <- list(label = "Model Averaged Neural Network", 
+modelInfo <- list(label = "Model Averaged Neural Network",
                   library = "nnet",
                   loop = NULL,
                   type = c("Classification", "Regression"),
                   parameters = data.frame(parameter = c('size', 'decay', 'bag'),
                                           class = c(rep("numeric", 2), "logical"),
                                           label = c('#Hidden Units', 'Weight Decay', 'Bagging')),
-                  grid = function(x, y, len = NULL) expand.grid(size = ((1:len) * 2) - 1, 
+                  grid = function(x, y, len = NULL) expand.grid(size = ((1:len) * 2) - 1,
                                                                 decay = c(0, 10 ^ seq(-1, -4, length = len - 1)),
                                                                 bag = FALSE),
                   fit = function(x, y, wts, param, lev, last, classProbs, ...) {
@@ -15,7 +15,7 @@ modelInfo <- list(label = "Model Averaged Neural Network",
                     if(!is.null(wts)) {
                       out <- avNNet(.outcome ~ .,
                                     data = dat,
-                                    weights = wts,                                       
+                                    weights = wts,
                                     size = param$size,
                                     decay = param$decay,
                                     bag = param$bag,
@@ -28,13 +28,13 @@ modelInfo <- list(label = "Model Averaged Neural Network",
                                          ...)
                     out
                   },
-                  predict = function(modelFit, newdata, submodels = NULL)
+                  predict = function(modelFit, newdata, submodels = NULL, ...)
                   {
                     if(modelFit$problemType == "Classification")
                     {
-                      out <- predict(modelFit, newdata, type="class")
+                      out <- predict(modelFit, newdata, type="class", ...)
                     } else {
-                      out  <- predict(modelFit, newdata, type="raw")
+                      out  <- predict(modelFit, newdata, type="raw", ...)
                     }
                     out
                   },
