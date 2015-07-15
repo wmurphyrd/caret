@@ -14,12 +14,12 @@ modelInfo <- list(label = "k-Nearest Neighbors",
                       knnreg(as.matrix(x), y, k = param$k, ...)
                     }
                   },
-                  predict = function(modelFit, newdata, submodels = NULL) {
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
                     if(modelFit$problemType == "Classification")
                     {
-                      out <- predict(modelFit, newdata,  type = "class")
+                      out <- predict(modelFit, newdata,  type = "class", ...)
                     } else {
-                      out <- predict(modelFit, newdata)
+                      out <- predict(modelFit, newdata, ...)
                     }
                     out
                   },

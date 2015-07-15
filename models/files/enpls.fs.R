@@ -4,24 +4,24 @@ modelInfo <- list(label = "Ensemble Partial Least Squares Regression with Featur
                   parameters = data.frame(parameter = c('maxcomp', 'threshold'),
                                           class = rep("numeric", 2),
                                           label = c('Max. #Components', "Importance Cutoff")),
-                  grid = function(x, y, len = NULL) data.frame(maxcomp = ncol(x), 
+                  grid = function(x, y, len = NULL) data.frame(maxcomp = ncol(x),
                                                                threshold = 2),
                   loop = NULL,
-                  fit = function(x, y, wts, param, lev, last, classProbs, ...) { 
+                  fit = function(x, y, wts, param, lev, last, classProbs, ...) {
                     x <- if(is.matrix(x)) x else as.matrix(x)
                     vi <- enpls.fs(x = x, y = y, maxcomp = param$maxcomp, ...)[[1]]
                     if(any(vi > param$threshold)) {
                       keepers <- names(vi)[vi > param$threshold]
                     } else keepers <- names(vi)[which.max(vi)]
-                    enpls.en(x = x[, keepers, drop = FALSE], y = y, 
-                             maxcomp = min(param$maxcomp, length(keepers)), 
+                    enpls.en(x = x[, keepers, drop = FALSE], y = y,
+                             maxcomp = min(param$maxcomp, length(keepers)),
                              ...)
                   },
-                  predict = function(modelFit, newdata, submodels = NULL) {
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
                     print(enpls.en)
                     newdata <- if(is.matrix(newdata)) newdata else as.matrix(newdata)
                     keepers <- rownames(modelFit[[1]][[1]]$loadings)
-                    predict(modelFit, newdata[, keepers, drop = FALSE])          
+                    predict(modelFit, newdata[, keepers, drop = FALSE], ...)
                   },
                   predictors = function(x, ...) rownames(x$projection),
                   tags = c("Partial Least Squares", "Ensemble Model"),

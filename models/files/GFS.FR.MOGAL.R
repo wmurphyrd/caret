@@ -6,32 +6,32 @@ modelInfo <- list(label = "Fuzzy Rules via MOGUL",
                                           label = c('Max. Generations', 'Max. Iterations',
                                                     'Max. Tuning Iterations')),
                   grid = function(x, y, len = NULL)
-                    expand.grid(max.gen = 10*(1:len),      
+                    expand.grid(max.gen = 10*(1:len),
                                 max.iter = 100,
                                 max.tune = 10*(1:len)),
                   loop = NULL,
-                  fit = function(x, y, wts, param, lev, last, classProbs, ...) { 
+                  fit = function(x, y, wts, param, lev, last, classProbs, ...) {
                     args <- list(data.train = as.matrix(cbind(x, y)),
                                  method.type = "GFS.FR.MOGUL")
                     args$range.data <- apply(args$data.train, 2, extendrange)
-                    
+
                     theDots <- list(...)
                     if(any(names(theDots) == "control")) {
-                      theDots$control$max.gen <- param$max.gen                  
+                      theDots$control$max.gen <- param$max.gen
                       theDots$control$max.iter <- param$max.iter
-                      theDots$control$max.tune <- param$max.tune 
-                    } else theDots$control <- list(max.gen = param$max.gen,                  
+                      theDots$control$max.tune <- param$max.tune
+                    } else theDots$control <- list(max.gen = param$max.gen,
                                                    max.iter = param$max.iter,
                                                    max.tune = param$max.tune,
                                                    persen_cross = 0.6,
                                                    persen_mutant = 0.3,
                                                    epsilon = 0.4,
-                                                   name="sim-0")     
+                                                   name="sim-0")
                     do.call("frbs.learn", c(args, theDots))
-                    
+
                     },
-                  predict = function(modelFit, newdata, submodels = NULL) {
-                    predict(modelFit, newdata)
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
+                    predict(modelFit, newdata, ...)
                   },
                   prob = NULL,
                   predictors = function(x, ...){

@@ -10,24 +10,24 @@ modelInfo <- list(label = "Rule-Based Classifier",
                     dat <- if(is.data.frame(x)) x else as.data.frame(x)
                     dat$.outcome <- y
                     theDots <- list(...)
-                    
+
                     if(any(names(theDots) == "control")) {
-                      theDots$control$N <- param$NumOpt 
+                      theDots$control$N <- param$NumOpt
                       ctl <- theDots$control
                       theDots$control <- NULL
-                    } else ctl <- Weka_control(N = param$NumOpt) 
-                    
+                    } else ctl <- Weka_control(N = param$NumOpt)
+
                     modelArgs <- c(list(formula = as.formula(".outcome ~ ."),
                                         data = dat,
                                         control = ctl),
                                    theDots)
-                    
-                    out <- do.call("JRip", modelArgs) 
-                    out      
+
+                    out <- do.call("JRip", modelArgs)
+                    out
                     },
-                  predict = function(modelFit, newdata, submodels = NULL) {
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
                     if(!is.data.frame(newdata)) newdata <- as.data.frame(newdata)
-                    predict(modelFit, newdata)
+                    predict(modelFit, newdata, ...)
                   },
                   prob = function(modelFit, newdata, submodels = NULL) {
                     if(!is.data.frame(newdata)) newdata <- as.data.frame(newdata)

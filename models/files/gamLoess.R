@@ -5,7 +5,7 @@ modelInfo <- list(label = "Generalized Additive Model using LOESS",
                   parameters = data.frame(parameter = c('span', 'degree'),
                                           class = c('numeric', 'numeric'),
                                           label = c('Span', 'Degree')),
-                  grid = function(x, y, len = NULL) 
+                  grid = function(x, y, len = NULL)
                     expand.grid(span = .5, degree = 1),
                   fit = function(x, y, wts, param, lev, last, classProbs, ...) {
                     args <- list(data = if(is.data.frame(x)) x else as.data.frame(x))
@@ -15,24 +15,24 @@ modelInfo <- list(label = "Generalized Additive Model using LOESS",
                                                             span = param$span,
                                                             degree = param$degree)
                     theDots <- list(...)
-                    
-                    
-                    if(!any(names(theDots) == "family")) 
+
+
+                    if(!any(names(theDots) == "family"))
                       args$family <- if(is.factor(y)) binomial else gaussian
-                    
+
                     if(length(theDots) > 0) args <- c(args, theDots)
-                    
+
                     do.call(getFromNamespace("gam", "gam"), args)
                   },
-                  predict = function(modelFit, newdata, submodels = NULL) {
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
                     if(!is.data.frame(newdata)) newdata <- as.data.frame(newdata)
                     if(modelFit$problemType == "Classification") {
-                      probs <-  gam:::predict.gam(modelFit, newdata, type = "response")
+                      probs <-  gam:::predict.gam(modelFit, newdata, type = "response", ...)
                       out <- ifelse(probs < .5,
                                     modelFit$obsLevel[1],
                                     modelFit$obsLevel[2])
                     } else {
-                      out <- gam:::predict.gam(modelFit, newdata, type = "response")
+                      out <- gam:::predict.gam(modelFit, newdata, type = "response", ...)
                     }
                     out
                   },
@@ -61,9 +61,9 @@ modelInfo <- list(label = "Generalized Additive Model using LOESS",
                     }
                     gamSummary <- gam:::summary.gam(object)
                     smoothed <- gamSummary$anova
-                    smoothed <- smoothed[complete.cases(smoothed), grepl("^P", colnames(smoothed)), drop = FALSE] 
+                    smoothed <- smoothed[complete.cases(smoothed), grepl("^P", colnames(smoothed)), drop = FALSE]
                     linear <- gamSummary$parametric.anova
-                    linear <- linear[complete.cases(linear), grepl("^P", colnames(linear)), drop = FALSE] 
+                    linear <- linear[complete.cases(linear), grepl("^P", colnames(linear)), drop = FALSE]
                     linear <- linear[!(rownames(linear) %in% rownames(smoothed)),,drop = FALSE]
                     colnames(smoothed) <- colnames(linear) <- "pval"
                     gams <- rbind(smoothed, linear)

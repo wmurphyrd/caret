@@ -11,29 +11,29 @@ modelInfo <- list(label = "Tree Models from Genetic Algorithms",
                     dat <- if(is.data.frame(x)) x else as.data.frame(x)
                     dat$.outcome <- y
                     theDots <- list(...)
-                    
+
                     if(any(names(theDots) == "control"))
                     {
-                      theDots$control$alpha <- param$alpha 
+                      theDots$control$alpha <- param$alpha
                       ctl <- theDots$control
                       theDots$control <- NULL
-                    } else ctl <- evtree.control(alpha = param$alpha)          
-                    
+                    } else ctl <- evtree.control(alpha = param$alpha)
+
                     ## pass in any model weights
                     if(!is.null(wts)) theDots$weights <- wts
-                    
+
                     modelArgs <- c(list(formula = as.formula(".outcome ~ ."),
                                         data = dat,
                                         control = ctl),
                                    theDots)
-                    
+
                     out <- do.call("evtree", modelArgs)
-                    out  
+                    out
                   },
                   levels = function(x) x$obsLevels,
-                  predict = function(modelFit, newdata, submodels = NULL) {
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
                     if(!is.data.frame(newdata)) newdata <- as.data.frame(newdata)
-                    predict(modelFit, newdata)
+                    predict(modelFit, newdata, ...)
                     },
                   prob = function(modelFit, newdata, submodels = NULL) {
                     if(!is.data.frame(newdata)) newdata <- as.data.frame(newdata)

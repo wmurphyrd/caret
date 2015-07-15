@@ -6,43 +6,43 @@ modelInfo <- list(label = "Conditional Inference Random Forest",
                                           class = 'numeric',
                                           label = "#Randomly Selected Predictors"),
                   grid = function(x, y, len = NULL) {
-                    data.frame(mtry = caret::var_seq(p = ncol(x), 
-                                              classification = is.factor(y), 
+                    data.frame(mtry = caret::var_seq(p = ncol(x),
+                                              classification = is.factor(y),
                                               len = len))
                   },
                   fit = function(x, y, wts, param, lev, last, classProbs, ...) {
                     dat <- if(is.data.frame(x)) x else as.data.frame(x)
                     dat$.outcome <- y
                     theDots <- list(...)
-                    
+
                     if(any(names(theDots) == "controls"))
                     {
-                      theDots$controls@gtctrl@mtry <- as.integer(param$mtry) 
+                      theDots$controls@gtctrl@mtry <- as.integer(param$mtry)
                       ctl <- theDots$controls
                       theDots$controls <- NULL
-                      
+
                     } else ctl <- cforest_control(mtry = param$mtry)
-                    
+
                     ## pass in any model weights
                     if(!is.null(wts)) theDots$weights <- wts
-                    
+
                     modelArgs <- c(list(formula = as.formula(.outcome ~ .),
                                         data = dat,
                                         controls = ctl),
                                    theDots)
-                    
+
                     out <- do.call(getFromNamespace("cforest", "party"), modelArgs)
-                    out 
+                    out
                   },
-                  predict = function(modelFit, newdata, submodels = NULL) {
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
                     if(!is.data.frame(newdata)) newdata <- as.data.frame(newdata)
                     ## party builds the levels into the model object, so I'm
                     ## going to assume that all the levels will be passed to
                     ## the output
-                    out <- predict(modelFit, newdata, OOB = TRUE)
+                    out <- predict(modelFit, newdata, OOB = TRUE, ...)
                     if(is.matrix(out)) out <- out[,1]
                     if(!is.null(modelFit@responses@levels$.outcome)) out <- as.character(out)
-                    
+
                     out
                   },
                   prob = function(modelFit, newdata, submodels = NULL) {

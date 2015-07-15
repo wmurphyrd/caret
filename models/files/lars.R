@@ -6,37 +6,37 @@ modelInfo <- list(label = "Least Angle Regression",
                                           label = 'Fraction'),
                   grid = function(x, y, len = NULL)
                     expand.grid(fraction = seq(0.05, 1, length = len)),
-                  loop = function(grid) {   
+                  loop = function(grid) {
                     grid <- grid[order(grid$fraction, decreasing = TRUE),, drop = FALSE]
                     loop <- grid[1,,drop = FALSE]
-                    submodels <- list(grid[-1,,drop = FALSE])     
+                    submodels <- list(grid[-1,,drop = FALSE])
                     list(loop = loop, submodels = submodels)
                   },
-                  fit = function(x, y, wts, param, lev, last, classProbs, ...) 
+                  fit = function(x, y, wts, param, lev, last, classProbs, ...)
                     lars(as.matrix(x), y, ...),
-                  predict = function(modelFit, newdata, submodels = NULL) {
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
                     out <- predict(modelFit,
                                    as.matrix(newdata),
                                    type = "fit",
                                    mode = "fraction",
-                                   s = modelFit$tuneValue$fraction)$fit
-                    
+                                   s = modelFit$tuneValue$fraction, ...)$fit
+
                     if(!is.null(submodels))
                     {
                       tmp <- vector(mode = "list", length = nrow(submodels) + 1)
                       tmp[[1]] <- out
-                      
+
                       for(j in seq(along = submodels$fraction))
                       {
                         tmp[[j+1]] <- predict(modelFit,
                                               as.matrix(newdata),
                                               type = "fit",
                                               mode = "fraction",
-                                              s = submodels$fraction[j])$fit
+                                              s = submodels$fraction[j], ...)$fit
                       }
                       out <- tmp
                     }
-                    out        
+                    out
                   },
                   predictors = function(x, s = NULL, ...) {
                     if(is.null(s))
@@ -48,10 +48,10 @@ modelInfo <- list(label = "Least Angle Regression",
                       out <- predict(x, s = s,
                                      type = "coefficients",
                                      mode = "fraction")$coefficients
-                      
+
                     } else {
                       out <- predict(x, s = s, ...)$coefficients
-                      
+
                     }
                     names(out)[out != 0]
                   },

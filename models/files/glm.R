@@ -28,15 +28,15 @@ modelInfo <- list(label = "Generalized Linear Model",
                     out$call <- NULL
                     out
                   },
-                  predict = function(modelFit, newdata, submodels = NULL) {
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
                     if(!is.data.frame(newdata)) newdata <- as.data.frame(newdata)
                     if(modelFit$problemType == "Classification") {
-                      probs <-  predict(modelFit, newdata, type = "response")
+                      probs <-  predict(modelFit, newdata, type = "response", ...)
                       out <- ifelse(probs < .5,
                                     modelFit$obsLevel[1],
                                     modelFit$obsLevel[2])
                     } else {
-                      out <- predict(modelFit, newdata, type = "response")
+                      out <- predict(modelFit, newdata, type = "response", ...)
                     }
                     out
                   },

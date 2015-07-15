@@ -6,15 +6,15 @@
                                               class = c('numeric', 'numeric'),
                                               label = c('# Randomly Selected Predictors', '# Random Cuts')),
                       grid = function(x, y, len = NULL){
-                        expand.grid(mtry = caret::var_seq(p = ncol(x), 
-                                                   classification = is.factor(y), 
-                                                   len = len), 
+                        expand.grid(mtry = caret::var_seq(p = ncol(x),
+                                                   classification = is.factor(y),
+                                                   len = len),
                                     numRandomCuts = 1:len)
                       },
-                      fit = function(x, y, wts, param, lev, last, classProbs, ...) 
+                      fit = function(x, y, wts, param, lev, last, classProbs, ...)
                         extraTrees(x, y, mtry = param$mtry, numRandomCuts = param$numRandomCuts, ...),
-                      predict = function(modelFit, newdata, submodels = NULL)
-                        predict(modelFit, newdata),
+                      predict = function(modelFit, newdata, submodels = NULL, ...)
+                        predict(modelFit, newdata, ...),
                       prob = function(modelFit, newdata, submodels = NULL)
                         predict(modelFit, newdata, probability = TRUE),
                       levels = function(x) x$obsLevels,

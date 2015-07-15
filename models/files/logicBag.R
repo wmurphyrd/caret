@@ -12,16 +12,16 @@ modelInfo <- list(label = "Bagged Logic Regression",
                                   nleaves = param$nleaves,
                                   ...)
                   },
-                  predict = function(modelFit, newdata, submodels = NULL) {
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
                     if(modelFit$problemType == "Classification")
                     {
                       if(length(modelFit$obsLevels) == 2)
                       {
-                        as.character(modelFit$obsLevels[predict(modelFit, newData = newdata) + 1])
+                        as.character(modelFit$obsLevels[predict(modelFit, newData = newdata, ...) + 1])
                       } else {
-                        as.character(predict(modelFit, newData = newdata))
+                        as.character(predict(modelFit, newData = newdata, ...))
                       }
-                    } else predict(modelFit, newData = newdata)
+                    } else predict(modelFit, newData = newdata, ...)
                   },
                   prob = function(modelFit, newdata, submodels = NULL) {
                     if(length(modelFit$obsLevels) == 2)
@@ -40,7 +40,7 @@ modelInfo <- list(label = "Bagged Logic Regression",
                                                          function(z) z$trees$knot))
                     varNums <- sort(unique(unlist(varNums)))
                     varNums <- varNums[varNums > 0]
-                    if(length(varNums) > 0) colnames(x$data)[varNums] else NA    
+                    if(length(varNums) > 0) colnames(x$data)[varNums] else NA
                   },
                   levels = function(x) x$obsLevels,
                   tags = c("Logic Regression", "Linear Classifier", "Linear Regression", "Logistic Regression",

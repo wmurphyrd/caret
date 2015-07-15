@@ -10,24 +10,24 @@ modelInfo <- list(label = "Logistic Model Trees",
                     dat <- if(is.data.frame(x)) x else as.data.frame(x)
                     dat$.outcome <- y
                     theDots <- list(...)
-                    
+
                     if(any(names(theDots) == "control")) {
-                      theDots$control$I <- param$iter 
+                      theDots$control$I <- param$iter
                       ctl <- theDots$control
                       theDots$control <- NULL
-                    } else ctl <- Weka_control(I = param$iter) 
-                    
+                    } else ctl <- Weka_control(I = param$iter)
+
                     modelArgs <- c(list(formula = as.formula(".outcome ~ ."),
                                         data = dat,
                                         control = ctl),
                                    theDots)
-                    
-                    out <- do.call("LMT", modelArgs) 
-                    out      
+
+                    out <- do.call("LMT", modelArgs)
+                    out
                     },
-                  predict = function(modelFit, newdata, submodels = NULL) {
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
                     if(!is.data.frame(newdata)) newdata <- as.data.frame(newdata)
-                    predict(modelFit, newdata)
+                    predict(modelFit, newdata, ...)
                   },
                   prob = function(modelFit, newdata, submodels = NULL) {
                     if(!is.data.frame(newdata)) newdata <- as.data.frame(newdata)

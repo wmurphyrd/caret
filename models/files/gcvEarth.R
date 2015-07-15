@@ -8,28 +8,28 @@ modelInfo <- list(label = "Multivariate Adaptive Regression Splines",
                     data.frame(degree = 1)
                   },
                   loop = NULL,
-                  fit = function(x, y, wts, param, lev, last, classProbs, ...) { 
+                  fit = function(x, y, wts, param, lev, last, classProbs, ...) {
                     theDots <- list(...)
-                    theDots$keepxy <- TRUE 
-                    
+                    theDots$keepxy <- TRUE
+
                     modelArgs <- c(list(x = x, y = y,
                                         degree = param$degree),
                                    theDots)
                     if(is.factor(y)) modelArgs$glm <- list(family=binomial)
-                    
+
                     tmp <- do.call("earth", modelArgs)
-                    
+
                     tmp$call["degree"] <-  param$degree
-                    tmp 
+                    tmp
                     },
-                  predict = function(modelFit, newdata, submodels = NULL) {
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
                     if(modelFit$problemType == "Classification")
                     {
-                      out <- predict(modelFit, newdata,  type = "class")
+                      out <- predict(modelFit, newdata,  type = "class", ...)
                     } else {
-                      out <- predict(modelFit, newdata)
+                      out <- predict(modelFit, newdata, ...)
                     }
-                    as.vector(out)            
+                    as.vector(out)
                   },
                   prob = function(modelFit, newdata, submodels = NULL) {
                     out <- predict(modelFit, newdata, type= "response")
@@ -45,16 +45,16 @@ modelInfo <- list(label = "Multivariate Adaptive Regression Splines",
                   varImp = function(object, value = "gcv", ...) {
                     earthImp <- evimp(object)
                     if(!is.matrix(earthImp)) earthImp <- t(as.matrix(earthImp))
-                    
+
                     # get other variable names and padd with zeros
-                    
+
                     out <- earthImp
                     perfCol <- which(colnames(out) == value)
-                    
+
                     increaseInd <- out[,perfCol + 1]
-                    out <- as.data.frame(out[,perfCol, drop = FALSE])  
+                    out <- as.data.frame(out[,perfCol, drop = FALSE])
                     colnames(out) <- "Overall"
-                    
+
                     # At this point, we still may have some variables
                     # that are not in the model but have non-zero
                     # importance. We'll set those to zero
@@ -62,10 +62,10 @@ modelInfo <- list(label = "Multivariate Adaptive Regression Splines",
                       dropList <- grep("-unused", rownames(earthImp), value = TRUE)
                       out$Overall[rownames(out) %in% dropList] <- 0
                     }
-                    rownames(out) <- gsub("-unused", "", rownames(out))                
+                    rownames(out) <- gsub("-unused", "", rownames(out))
                     out <- as.data.frame(out)
                     # fill in zeros for any variabels not  in out
-                    
+
                     xNames <- object$namesx.org
                     if(any(!(xNames %in% rownames(out)))) {
                       xNames <- xNames[!(xNames %in% rownames(out))]

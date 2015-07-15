@@ -5,12 +5,12 @@ modelInfo <- list(label = "Multi-Layer Perceptron",
                   parameters = data.frame(parameter = c('size'),
                                           class = c('numeric'),
                                           label = c('#Hidden Units')),
-                  grid = function(x, y, len = NULL) 
+                  grid = function(x, y, len = NULL)
                     data.frame(size =  ((1:len) * 2) - 1),
                   fit = function(x, y, wts, param, lev, last, classProbs, ...) {
                     theDots <- list(...)
-                    theDots <- theDots[!(names(theDots) %in% c("size", "linOut"))]                   
-                    
+                    theDots <- theDots[!(names(theDots) %in% c("size", "linOut"))]
+
                     if(is.factor(y)) {
                       y <- RSNNS:::decodeClassLabels(y)
                       lin <- FALSE
@@ -22,8 +22,8 @@ modelInfo <- list(label = "Multi-Layer Perceptron",
                     args <- c(args, theDots)
                     do.call("mlp", args)
                   },
-                  predict = function(modelFit, newdata, submodels = NULL) {
-                    out <- predict(modelFit, newdata)
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
+                    out <- predict(modelFit, newdata, ...)
                     if(modelFit$problemType == "Classification")
                     {
                       out <- modelFit$obsLevels[apply(out, 1, which.max)]

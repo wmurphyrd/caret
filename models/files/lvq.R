@@ -6,7 +6,7 @@ modelInfo <- list(label = "Learning Vector Quantization",
                                           class = c("numeric", "numeric"),
                                           label = c('Codebook Size', '#Prototypes')),
                   grid = function(x, y, len = NULL) {
-                    p <- ncol(x) 
+                    p <- ncol(x)
                     ng <- length(levels(y))
                     n <- nrow(x)
                     tmp <- min(round(0.4*ng*(ng-1 + p/2),0), n)
@@ -15,9 +15,9 @@ modelInfo <- list(label = "Learning Vector Quantization",
                     out <- subset(out, k <= size & size < n)
                     out
                   },
-                  fit = function(x, y, wts, param, lev, last, classProbs, ...) 
+                  fit = function(x, y, wts, param, lev, last, classProbs, ...)
                     lvq3(x, y, lvqinit(x, y, size = param$size, k = param$k), ...),
-                  predict = function(modelFit, newdata, submodels = NULL) 
+                  predict = function(modelFit, newdata, submodels = NULL)
                     lvqtest(modelFit , newdata),
                   levels = function(x) x$obsLevels,
                   prob = NULL,

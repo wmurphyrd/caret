@@ -16,12 +16,12 @@ modelInfo <- list(label = "Logic Regression",
                            type = ifelse(isReg, 2, 3),
                            ...)
                   },
-                  predict = function(modelFit, newdata, submodels = NULL) {
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
                     if(modelFit$type == "logistic")
                     {
-                      out <- ifelse(predict(modelFit, newbin = newdata) >= .5,
+                      out <- ifelse(predict(modelFit, newbin = newdata, ...) >= .5,
                                     modelFit$obsLevels[1], modelFit$obsLevels[2])
-                    } else out <- predict(modelFit, newbin = newdata)
+                    } else out <- predict(modelFit, newbin = newdata, ...)
                     out
                   },
                   prob = function(modelFit, newdata, submodels = NULL) {

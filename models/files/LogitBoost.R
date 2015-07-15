@@ -1,14 +1,14 @@
 modelInfo <- list(label = "Boosted Logistic Regression",
                   library = "caTools",
-                  loop = function(grid) {            
+                  loop = function(grid) {
                     ## Get the largest value of ncomp to fit the "full" model
                     loop <- grid[which.max(grid$nIter),,drop = FALSE]
-                    
+
                     submodels <- grid[-which.max(grid$nIter),,drop = FALSE]
-                    
+
                     ## This needs to be excased in a list in case there are more
                     ## than one tuning parameter
-                    submodels <- list(submodels)  
+                    submodels <- list(submodels)
                     list(loop = loop, submodels = submodels)
                   },
                   type = "Classification",
@@ -21,27 +21,27 @@ modelInfo <- list(label = "Boosted Logistic Regression",
                     ## so we call using the namespace
                     caTools::LogitBoost(as.matrix(x), y, nIter = param$nIter)
                   },
-                  predict = function(modelFit, newdata, submodels = NULL) {
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
                     ## This model was fit with the maximum value of nIter
-                    out <- caTools::predict.LogitBoost(modelFit, newdata, type="class")
-                    ## submodels contains one of the elements of 'submodels'. In this 
+                    out <- caTools::predict.LogitBoost(modelFit, newdata, type="class", ...)
+                    ## submodels contains one of the elements of 'submodels'. In this
                     ## case, 'submodels' is a data frame with the other values of
                     ## nIter. We loop over these to get the other predictions.
                     if(!is.null(submodels))
-                    {                   
+                    {
                       ## Save _all_ the predictions in a list
                       tmp <- out
                       out <- vector(mode = "list", length = nrow(submodels) + 1)
                       out[[1]] <- tmp
-                      
+
                       for(j in seq(along = submodels$nIter))
                       {
                         out[[j+1]] <- caTools::predict.LogitBoost(modelFit,
                                                                   newdata,
-                                                                  nIter = submodels$nIter[j])
+                                                                  nIter = submodels$nIter[j], ...)
                       }
                     }
-                    out                   
+                    out
                   },
                   prob = function(modelFit, newdata, submodels = NULL) {
                     out <- caTools::predict.LogitBoost(modelFit, newdata, type = "raw")
@@ -51,26 +51,26 @@ modelInfo <- list(label = "Boosted Logistic Regression",
                     {
                       tmp <- vector(mode = "list", length = nrow(submodels) + 1)
                       tmp[[1]] <- out
-                      
+
                       for(j in seq(along = submodels$nIter))
-                      {                           
+                      {
                         tmpProb <- caTools::predict.LogitBoost(modelFit,
                                                                newdata,
                                                                type = "raw",
                                                                nIter = submodels$nIter[j])
                         tmpProb <- out <- t(apply(tmpProb, 1, function(x) x/sum(x)))
-                        tmp[[j+1]] <- as.data.frame(tmpProb[, modelFit$obsLevels,drop = FALSE])           
+                        tmp[[j+1]] <- as.data.frame(tmpProb[, modelFit$obsLevels,drop = FALSE])
                       }
                       out <- tmp
-                    }                       
+                    }
                     out
                   },
-                  predictors = function(x, ...) {                    
+                  predictors = function(x, ...) {
                     if(!is.null(x$xNames))
                     {
                       out <- unique(x$xNames[x$Stump[, "feature"]])
                     } else out <- NA
-                    
+
                     out
                   },
                   levels = function(x) x$obsLevels,

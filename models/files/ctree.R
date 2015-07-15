@@ -17,7 +17,7 @@ modelInfo <- list(label = "Conditional Inference Tree",
                         theDots$controls@gtctrl@mincriterion <- param$mincriterion
                         ctl <- theDots$controls
                         theDots$controls <- NULL
-                      } else ctl <- do.call(getFromNamespace("ctree_control", "party"), 
+                      } else ctl <- do.call(getFromNamespace("ctree_control", "party"),
                                             list(mincriterion = param$mincriterion))
                     ## pass in any model weights
                     if(!is.null(wts)) theDots$weights <- wts
@@ -30,9 +30,9 @@ modelInfo <- list(label = "Conditional Inference Tree",
                     out <- do.call(getFromNamespace("ctree", "party"), modelArgs)
                     out
                   },
-                  predict = function(modelFit, newdata, submodels = NULL) {
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
                     if(!is.data.frame(newdata)) newdata <- as.data.frame(newdata)
-                    out <- predict(modelFit, newdata)
+                    out <- predict(modelFit, newdata, ...)
                     if(!is.null(modelFit@responses@levels$.outcome)) out <- as.character(out)
                     if(is.matrix(out)) out <- out[,1]
                     out
@@ -56,7 +56,7 @@ modelInfo <- list(label = "Conditional Inference Tree",
                       target2 <- "ssplits\\.variableName"
                       svars <- treeObj[grep(target, names(treeObj))]
                       vars <- c(vars, svars)
-                      
+
                     }
                     unique(vars)
                   },

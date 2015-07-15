@@ -5,8 +5,8 @@ modelInfo <- list(label = "Extreme Learning Machine",
                   parameters = data.frame(parameter = c('nhid', 'actfun'),
                                           class = c("numeric", "character"),
                                           label = c('#Hidden Units', 'Activation Function')),
-                  grid = function(x, y, len = NULL) expand.grid(nhid = ((1:len) * 2) - 1, 
-                                                                actfun = c("sin", "radbas", 
+                  grid = function(x, y, len = NULL) expand.grid(nhid = ((1:len) * 2) - 1,
+                                                                actfun = c("sin", "radbas",
                                                                            "purelin", "tansig")),
                   fit = function(x, y, wts, param, lev, last, classProbs, ...) {
                     if(is.factor(y)) {
@@ -19,19 +19,19 @@ modelInfo <- list(label = "Extreme Learning Machine",
                         attributes(x) <- att
                         x
                       }
-                      out <- elmtrain(x = x, y = factor2ind(y), 
+                      out <- elmtrain(x = x, y = factor2ind(y),
                                       nhid = param$nhid, actfun = param$actfun, ...)
                       out$lev <- levels(y)
-                      
+
                     } else {
                       out <- elmtrain(x = x, y = y, nhid = param$nhid, actfun = param$actfun, ...)
                     }
                     out$xNames <- colnames(x)
                     out
                   },
-                  predict = function(modelFit, newdata, submodels = NULL)
+                  predict = function(modelFit, newdata, submodels = NULL, ...)
                   {
-                    out <- predict(modelFit, newdata, type="class")
+                    out <- predict(modelFit, newdata, type="class", ...)
                     if(modelFit$problemType == "Classification") {
                       out <- modelFit$lev[apply(out, 1, which.max)]
                       out <- factor(out, levels = modelFit$lev)

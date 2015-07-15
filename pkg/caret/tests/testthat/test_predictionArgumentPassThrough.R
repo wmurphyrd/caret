@@ -19,4 +19,4 @@ library(doParallel)
 registerDoParallel()
 tbag <- train(Species ~ ., data=iris, method="AdaBag", trControl = trainControl(method="none"), tuneLength = 1)
 stopImplicitCluster()
-
+psub <- predict(list(tbag), param=list(mfinal=1:5))

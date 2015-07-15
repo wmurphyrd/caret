@@ -4,7 +4,7 @@ modelInfo <- list(label = "CHi-squared Automated Interaction Detection",
                   type = c("Classification"),
                   parameters = data.frame(parameter = c('alpha2', 'alpha3', 'alpha4'),
                                           class = rep('numeric', 3),
-                                          label = c('Merging Threshold', 
+                                          label = c('Merging Threshold',
                                                     "Splitting former Merged Threshold", "
                                                     Splitting former Merged Threshold")),
                   grid = function(x, y, len = NULL) {
@@ -36,9 +36,9 @@ modelInfo <- list(label = "CHi-squared Automated Interaction Detection",
                     out <- do.call("chaid", modelArgs)
                     out
                   },
-                  predict = function(modelFit, newdata, submodels = NULL) {
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
                     if(!is.data.frame(newdata)) newdata <- as.data.frame(newdata)
-                    predict(modelFit, newdata)
+                    predict(modelFit, newdata, ...)
                   },
                   prob = function(modelFit, newdata, submodels = NULL) {
                     if(!is.data.frame(newdata)) newdata <- as.data.frame(newdata)

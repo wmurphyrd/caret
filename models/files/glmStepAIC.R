@@ -10,44 +10,44 @@ modelInfo <- list(label = "Generalized Linear Model with Stepwise Feature Select
                     dat <- if(is.data.frame(x)) x else as.data.frame(x)
                     dat$.outcome <- y
                     if(length(levels(y)) > 2) stop("glm models can only use 2-class outcomes")
-                    
+
                     ## The ... could pass to stepAIC or glm, so we'll try to
                     ## parse them well
-                    
+
                     stepArgs <- names(formals(stepAIC))
                     stepArgs <- stepArgs[!(stepArgs %in% c("object", "..."))]
                     theDots <- list(...)
                     glmArgs <- list()
-                    
+
                     if(!any(names(theDots) == "family"))
                     {
-                      glmArgs$family <- if(is.factor(y)) binomial() else gaussian()              
+                      glmArgs$family <- if(is.factor(y)) binomial() else gaussian()
                     } else glmArgs$family <- theDots$family
                     if(any(!(names(theDots) %in% stepArgs))) theDots <- theDots[names(theDots) %in% stepArgs]
-                    
+
                     ## pass in any model weights
                     if(!is.null(wts)) glmArgs$weights <- wts
-                    
+
                     modelArgs <- c(list(formula = as.formula(".outcome ~ ."), data = dat),
                                    glmArgs)
-                    
+
                     mod <- do.call("glm", modelArgs)
-                    
+
                     theDots$object <- mod
                     out <- do.call("stepAIC", theDots)
                     out$call <- NULL
                     out
                   },
-                  predict = function(modelFit, newdata, submodels = NULL) {
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
                     if(!is.data.frame(newdata)) newdata <- as.data.frame(newdata)
                     if(modelFit$problemType == "Classification")
                     {
-                      probs <-  predict(modelFit, newdata, type = "response")
+                      probs <-  predict(modelFit, newdata, type = "response", ...)
                       out <- ifelse(probs < .5,
                                     modelFit$obsLevel[1],
                                     modelFit$obsLevel[2])
                     } else {
-                      out <- predict(modelFit, newdata, type = "response")
+                      out <- predict(modelFit, newdata, type = "response", ...)
                     }
                     out
                   },

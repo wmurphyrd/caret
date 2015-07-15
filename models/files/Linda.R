@@ -7,8 +7,8 @@ modelInfo <- list(label = "Robust Linear Discriminant Analysis",
                                           label = c('none')),
                   grid = function(x, y, len = NULL) data.frame(parameter = "none"),
                   fit = function(x, y, wts, param, lev, last, classProbs, ...) rrcov:::Linda(x, y, ...) ,
-                  predict = function(modelFit, newdata, submodels = NULL) 
-                    predict(modelFit, newdata)@classification,
+                  predict = function(modelFit, newdata, submodels = NULL, ...)
+                    predict(modelFit, newdata, ...)@classification,
                   prob = function(modelFit, newdata, submodels = NULL) {
                     probs <- predict(modelFit, newdata)@posterior
                     colnames(probs) <- names(modelFit@prior)

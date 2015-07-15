@@ -5,30 +5,30 @@ modelInfo <- list(label = "Fuzzy Inference Rules by Descent Method",
                                           class = c("numeric", "numeric"),
                                           label = c('#Fuzzy Terms', 'Max. Iterations')),
                   grid = function(x, y, len = NULL)
-                    expand.grid(num.labels = 1+(1:len)*2,      
+                    expand.grid(num.labels = 1+(1:len)*2,
                                 max.iter = 100),
                   loop = NULL,
-                  fit = function(x, y, wts, param, lev, last, classProbs, ...) { 
+                  fit = function(x, y, wts, param, lev, last, classProbs, ...) {
                     args <- list(data.train = as.matrix(cbind(x, y)),
                                  method.type = "FIR.DM")
                     args$range.data <- apply(args$data.train, 2, extendrange)
-                    
+
                     theDots <- list(...)
                     if(any(names(theDots) == "control")) {
-                      theDots$control$num.labels <- param$num.labels                  
+                      theDots$control$num.labels <- param$num.labels
                       theDots$control$max.iter <- param$max.iter
-                    } else theDots$control <- list(num.labels = param$num.labels,                  
+                    } else theDots$control <- list(num.labels = param$num.labels,
                                                    max.iter = param$max.iter,
-                                                   step.size = 0.01, 
-                                                   type.tnorm = "MIN", 
+                                                   step.size = 0.01,
+                                                   type.tnorm = "MIN",
                                                    type.snorm = "MAX",
                                                    type.implication.func = "ZADEH",
-                                                   name="sim-0")     
+                                                   name="sim-0")
                     do.call("frbs.learn", c(args, theDots))
-                    
+
                     },
-                  predict = function(modelFit, newdata, submodels = NULL) {
-                    predict(modelFit, newdata)
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
+                    predict(modelFit, newdata, ...)
                   },
                   prob = NULL,
                   predictors = function(x, ...){

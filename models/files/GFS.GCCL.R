@@ -6,31 +6,31 @@ modelInfo <- list(label = "Fuzzy Rules Using Genetic Cooperative-Competitive Lea
                                           label = c('#Fuzzy Terms', 'Population Size',
                                                     'Max. Generations')),
                   grid = function(x, y, len = NULL)
-                    expand.grid(num.labels = 1+(1:len)*2,      
+                    expand.grid(num.labels = 1+(1:len)*2,
                                 popu.size = 10,
                                 max.gen = 10),
                   loop = NULL,
-                  fit = function(x, y, wts, param, lev, last, classProbs, ...) { 
+                  fit = function(x, y, wts, param, lev, last, classProbs, ...) {
                     args <- list(data.train = as.matrix(cbind(x, as.numeric(y))),
                                  method.type = "GFS.GCCL")
                     args$range.data <- apply(x, 2, extendrange)
                     theDots <- list(...)
                     if(any(names(theDots) == "control")) {
-                      theDots$control$num.labels <- param$num.labels                  
+                      theDots$control$num.labels <- param$num.labels
                       theDots$control$popu.size <- param$popu.size
                       theDots$control$max.gen <- param$max.gen
-                    } else theDots$control <- list(num.labels = param$num.labels,                  
+                    } else theDots$control <- list(num.labels = param$num.labels,
                                                    popu.size  = param$popu.size,
                                                    max.gen    = param$max.gen,
                                                    persen_cross = 0.6,
                                                    persen_mutant = 0.3,
                                                    num.class = length(unique(y)),
-                                                   name="sim-0")     
+                                                   name="sim-0")
                     do.call("frbs.learn", c(args, theDots))
-                    
+
                     },
-                  predict = function(modelFit, newdata, submodels = NULL) {
-                    modelFit$obsLevels[predict(modelFit, newdata)[,1]]
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
+                    modelFit$obsLevels[predict(modelFit, newdata, ...)[,1]]
                   },
                   prob = NULL,
                   predictors = function(x, ...){

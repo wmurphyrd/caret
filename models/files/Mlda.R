@@ -5,12 +5,12 @@ modelInfo <- list(label = "Maximum Uncertainty Linear Discriminant Analysis",
                   parameters = data.frame(parameter = c('parameter'),
                                           class = c("character"),
                                           label = c('parameter')),
-                  grid = function(x, y, len = NULL) 
+                  grid = function(x, y, len = NULL)
                     data.frame(parameter = "none"),
-                  fit = function(x, y, wts, param, lev, last, classProbs, ...) 
+                  fit = function(x, y, wts, param, lev, last, classProbs, ...)
                     Mlda(x, y, q = param$.q, maxq = param$.q, ...),
-                  predict = function(modelFit, newdata, submodels = NULL) {
-                    out <- predict(modelFit, newdata)$class
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
+                    out <- predict(modelFit, newdata, ...)$class
                     out <- modelFit$obsLevels[as.numeric(out)]
                     out
                   },

@@ -5,30 +5,30 @@ modelInfo <- list(label = "Least Angle Regression",
                                           class = "numeric",
                                           label = '#Steps'),
                   grid = function(x, y, len = NULL) {
-                    data.frame(step = caret::var_seq(p = ncol(x), 
-                                              classification = is.factor(y), 
+                    data.frame(step = caret::var_seq(p = ncol(x),
+                                              classification = is.factor(y),
                                               len = len))
                   },
-                  loop = function(grid) {   
+                  loop = function(grid) {
                     grid <- grid[order(grid$step, decreasing = TRUE),, drop = FALSE]
                     loop <- grid[1,,drop = FALSE]
-                    submodels <- list(grid[-1,,drop = FALSE])     
+                    submodels <- list(grid[-1,,drop = FALSE])
                     list(loop = loop, submodels = submodels)
                   },
-                  fit = function(x, y, wts, param, lev, last, classProbs, ...) 
+                  fit = function(x, y, wts, param, lev, last, classProbs, ...)
                     lars(as.matrix(x), y, ...),
-                  predict = function(modelFit, newdata, submodels = NULL) {
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
                     out <- predict(modelFit,
                                    as.matrix(newdata),
                                    type = "fit",
                                    mode = "step",
-                                   s = modelFit$tuneValue$step)$fit
-                    
+                                   s = modelFit$tuneValue$step, ...)$fit
+
                     if(!is.null(submodels))
                     {
                       tmp <- vector(mode = "list", length = nrow(submodels) + 1)
                       tmp[[1]] <- out
-                      
+
                       for(j in seq(along = submodels$step))
                       {
                         tmp[[j+1]] <- predict(modelFit,
@@ -39,7 +39,7 @@ modelInfo <- list(label = "Least Angle Regression",
                       }
                       out <- tmp
                     }
-                    out       
+                    out
                   },
                   predictors = function(x, s = NULL, ...) {
                     if(is.null(s))
@@ -51,10 +51,10 @@ modelInfo <- list(label = "Least Angle Regression",
                       out <- predict(x, s = s,
                                      type = "coefficients",
                                      mode = "fraction")$coefficients
-                      
+
                     } else {
                       out <- predict(x, s = s, ...)$coefficients
-                      
+
                     }
                     names(out)[out != 0]
                   },

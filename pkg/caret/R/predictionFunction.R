@@ -4,7 +4,7 @@ predictionFunction <- function(method, modelFit, newdata, preProc = NULL, param 
   out <- method$predict(modelFit = modelFit,
                         newdata = newdata,
                         submodels = param, ...)
-  ##convert to character with classification
+  ## TODO convert to character with classification
   out
 }
 

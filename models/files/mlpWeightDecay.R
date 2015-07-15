@@ -5,8 +5,8 @@ modelInfo <- list(label = "Multi-Layer Perceptron",
                   parameters = data.frame(parameter = c('size', 'decay'),
                                           class = c('numeric', 'numeric'),
                                           label = c('#Hidden Units', 'Weight Decay')),
-                  grid = function(x, y, len = NULL) 
-                    expand.grid(size =  ((1:len) * 2) - 1, 
+                  grid = function(x, y, len = NULL)
+                    expand.grid(size =  ((1:len) * 2) - 1,
                                decay = c(0, 10 ^ seq(-1, -4, length = len - 1))),
                   fit = function(x, y, wts, param, lev, last, classProbs, ...) {
                     theDots <- list(...)
@@ -21,8 +21,8 @@ modelInfo <- list(label = "Multi-Layer Perceptron",
                       prms <- theDots$learnFuncParams
                       prms[3] <-  param$decay
                       warning("Over-riding weight decay value in the 'learnFuncParams' argument you passed in. Other values are retained")
-                    } else prms <- c(0.2, param$decay, 0.0, 0.0)    
-                    
+                    } else prms <- c(0.2, param$decay, 0.0, 0.0)
+
                     if(is.factor(y)) {
                       y <- RSNNS:::decodeClassLabels(y)
                       lin <- FALSE
@@ -30,14 +30,14 @@ modelInfo <- list(label = "Multi-Layer Perceptron",
                     args <- list(x = x,
                                  y = y,
                                  learnFunc = "BackpropWeightDecay",
-                                 learnFuncParams = prms,                                
+                                 learnFuncParams = prms,
                                  size = param$size,
                                  linOut = lin)
                     args <- c(args, theDots)
                     do.call("mlp", args)
                   },
-                  predict = function(modelFit, newdata, submodels = NULL) {
-                    out <- predict(modelFit, newdata)
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
+                    out <- predict(modelFit, newdata, ...)
                     if(modelFit$problemType == "Classification")
                     {
                       out <- modelFit$obsLevels[apply(out, 1, which.max)]

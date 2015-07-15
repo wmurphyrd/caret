@@ -8,10 +8,10 @@ modelInfo <- list(label = "glmnet",
                     numLev <- if(is.character(y) | is.factor(y)) length(levels(y)) else NA
                     if(!is.na(numLev)) {
                       fam <- ifelse(numLev > 2, "multinomial", "binomial")
-                    } else fam <- "gaussian"    
-                    init <- glmnet(as.matrix(x), y, 
-                                   family = fam, 
-                                   nlambda = len+2, 
+                    } else fam <- "gaussian"
+                    init <- glmnet(as.matrix(x), y,
+                                   family = fam,
+                                   nlambda = len+2,
                                    alpha = .5)
                     lambda <- unique(init$lambda)
                     lambda <- lambda[-c(1, length(lambda))]
@@ -19,7 +19,7 @@ modelInfo <- list(label = "glmnet",
                     expand.grid(alpha = seq(0.1, 1, length = len),
                                 lambda = lambda)
                   },
-                  loop = function(grid) {  
+                  loop = function(grid) {
                     alph <- unique(grid$alpha)
                     loop <- data.frame(alpha = alph)
                     loop$lambda <- NA
@@ -28,52 +28,52 @@ modelInfo <- list(label = "glmnet",
                       np <- grid[grid$alpha == alph[i],"lambda"]
                       loop$lambda[loop$alpha == alph[i]] <- np[which.max(np)]
                       submodels[[i]] <- data.frame(lambda = np[-which.max(np)])
-                    }  
+                    }
                     list(loop = loop, submodels = submodels)
                   },
                   fit = function(x, y, wts, param, lev, last, classProbs, ...) {
                     numLev <- if(is.character(y) | is.factor(y)) length(levels(y)) else NA
-                    
+
                     theDots <- list(...)
-                    
+
                     if(all(names(theDots) != "family")) {
                       if(!is.na(numLev)) {
                         fam <- ifelse(numLev > 2, "multinomial", "binomial")
-                      } else fam <- "gaussian"    
-                      theDots$family <- fam   
+                      } else fam <- "gaussian"
+                      theDots$family <- fam
                     }
-                    
+
                     ## pass in any model weights
                     if(!is.null(wts)) theDots$weights <- wts
-                    
+
                     modelArgs <- c(list(x = as.matrix(x),
                                         y = y,
                                         alpha = param$alpha),
                                    theDots)
-                    
-                    out <- do.call("glmnet", modelArgs) 
+
+                    out <- do.call("glmnet", modelArgs)
                     if(!is.na(param$lambda[1])) out$lambdaOpt <- param$lambda[1]
-                    out 
+                    out
                   },
-                  predict = function(modelFit, newdata, submodels = NULL) {
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
                     if(!is.matrix(newdata)) newdata <- as.matrix(newdata)
                     if(length(modelFit$obsLevels) < 2) {
-                      out <- predict(modelFit, newdata, s = modelFit$lambdaOpt)
+                      out <- predict(modelFit, newdata, s = modelFit$lambdaOpt, ...)
                     } else {
-                      out <- predict(modelFit, newdata, s = modelFit$lambdaOpt, type = "class")
+                      out <- predict(modelFit, newdata, s = modelFit$lambdaOpt, type = "class", ...)
                     }
                     if(is.matrix(out)) out <- out[,1]
-                    
+
                     if(!is.null(submodels)) {
                       if(length(modelFit$obsLevels) < 2) {
-                        tmp <- as.list(as.data.frame(predict(modelFit, newdata, s = submodels$lambda)))
+                        tmp <- as.list(as.data.frame(predict(modelFit, newdata, s = submodels$lambda, ...)))
                       } else {
-                        tmp <- predict(modelFit, newdata, s = submodels$lambda, type = "class")
+                        tmp <- predict(modelFit, newdata, s = submodels$lambda, type = "class", ...)
                         tmp <- if(is.matrix(tmp)) as.data.frame(tmp, stringsAsFactors = FALSE) else as.character(tmp)
                         tmp <- as.list(tmp)
                       }
                       out <- c(list(out), tmp)
-                    } 
+                    }
                     out
                   },
                   prob = function(modelFit, newdata, submodels = NULL) {
@@ -143,7 +143,7 @@ modelInfo <- list(label = "glmnet",
                     out
                   },
                   levels = function(x) if(any(names(x) == "obsLevels")) x$obsLevels else NULL,
-                  tags = c("Generalized Linear Model", "Implicit Feature Selection", 
+                  tags = c("Generalized Linear Model", "Implicit Feature Selection",
                            "L1 Regularization", "L2 Regularization", "Linear Classifier",
                            "Linear Regression"),
                   sort = function(x) x[order(-x$lambda, x$alpha),],

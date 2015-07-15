@@ -9,7 +9,7 @@ modelInfo <- list(label = "Independent Component Regression",
                   fit = function(x, y, wts, param, lev, last, classProbs, ...) {
                     icr(x, y, n.comp = param$n.comp, ...)
                   },
-                  predict = function(modelFit, newdata, submodels = NULL) predict(modelFit, newdata),
+                  predict = function(modelFit, newdata, submodels = NULL, ...) predict(modelFit, newdata, ...),
                   prob = NULL,
                   tags = c("Linear Regression", "Feature Extraction"),
                   sort = function(x) x[order(x[,1]),])

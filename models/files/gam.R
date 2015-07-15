@@ -5,9 +5,9 @@ modelInfo <- list(label = "Generalized Additive Model using Splines",
                   parameters = data.frame(parameter = c('select', 'method'),
                                           class = c('logical', 'character'),
                                           label = c('Feature Selection', 'Method')),
-                  grid = function(x, y, len = NULL) 
+                  grid = function(x, y, len = NULL)
                     expand.grid(select = c(TRUE, FALSE), method = "GCV.Cp"),
-                  fit = function(x, y, wts, param, lev, last, classProbs, ...) { 
+                  fit = function(x, y, wts, param, lev, last, classProbs, ...) {
                     dat <- if(is.data.frame(x)) x else as.data.frame(x)
                     modForm <- caret:::smootherFormula(x)
                     if(is.factor(y)) {
@@ -19,26 +19,26 @@ modelInfo <- list(label = "Generalized Additive Model using Splines",
                     }
                     modelArgs <- list(formula = modForm,
                                       data = dat,
-                                      select = param$select, 
+                                      select = param$select,
                                       method = as.character(param$method))
                     ## Intercept family if passed in
                     theDots <- list(...)
                     if(!any(names(theDots) == "family")) modelArgs$family <- dist
                     modelArgs <- c(modelArgs, theDots)
-                    
+
                     out <- do.call(getFromNamespace("gam", "mgcv"), modelArgs)
                     out
-                    
+
                   },
-                  predict = function(modelFit, newdata, submodels = NULL) {
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
                     if(!is.data.frame(newdata)) newdata <- as.data.frame(newdata)
                     if(modelFit$problemType == "Classification") {
-                      probs <-  predict(modelFit, newdata, type = "response")
+                      probs <-  predict(modelFit, newdata, type = "response", ...)
                       out <- ifelse(probs < .5,
                                     modelFit$obsLevel[1],
                                     modelFit$obsLevel[2])
                     } else {
-                      out <- predict(modelFit, newdata, type = "response")
+                      out <- predict(modelFit, newdata, type = "response", ...)
                     }
                     out
                   },
@@ -58,7 +58,7 @@ modelInfo <- list(label = "Generalized Additive Model using Splines",
                   varImp = function(object, ...) {
                     smoothed <- summary(object)$s.table[, "p-value", drop = FALSE]
                     linear <- summary(object)$p.table
-                    linear <- linear[, grepl("^Pr", colnames(linear)), drop = FALSE] 
+                    linear <- linear[, grepl("^Pr", colnames(linear)), drop = FALSE]
                     gams <- rbind(smoothed, linear)
                     gams <- gams[rownames(gams) != "(Intercept)",,drop = FALSE]
                     rownames(gams) <- gsub("^s\\(", "", rownames(gams))

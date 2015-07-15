@@ -4,7 +4,7 @@ modelInfo <- list(label = "Stacked AutoEncoder Deep Neural Network",
                   type = c("Classification", "Regression"),
                   parameters = data.frame(parameter = c("layer1", "layer2", "layer3", "hidden_dropout", "visible_dropout"),
                                           class = rep("numeric", 5),
-                                          label = c("Hidden Layer 1", "Hidden Layer 2", "Hidden Layer 3", 
+                                          label = c("Hidden Layer 1", "Hidden Layer 2", "Hidden Layer 3",
                                                     "Hidden Dropouts", "Visible Dropout")),
                   grid = function(x, y, len = NULL) {
                     expand.grid(layer1 = 1:len, layer2 = 0:(len -1), layer3 = 0:(len -1),
@@ -16,14 +16,14 @@ modelInfo <- list(label = "Stacked AutoEncoder Deep Neural Network",
                     if (is_class) y <- caret:::class2ind(y)
                     layers <- c(param$layer1, param$layer2, param$layer3)
                     layers <- layers[layers > 0]
-                    sae.dnn.train(x, y, hidden = layers, 
+                    sae.dnn.train(x, y, hidden = layers,
                                   output = if(is_class) "sigm" else "linear",
                                   hidden_dropout = param$hidden_dropout,
                                   visible_dropout = param$visible_dropout,
                                   ...)
                   },
-                  predict = function(modelFit, newdata, submodels = NULL) {
-                    pred <- nn.predict(modelFit, as.matrix(newdata))
+                  predict = function(modelFit, newdata, submodels = NULL, ...) {
+                    pred <- nn.predict(modelFit, as.matrix(newdata), ...)
                     if(ncol(pred) > 1)
                       pred <- modelFit$obsLevels[apply(pred, 1, which.max)]
                     pred
